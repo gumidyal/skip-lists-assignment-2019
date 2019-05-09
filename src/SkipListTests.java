@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -320,9 +321,52 @@ public class SkipListTests {
     } // if (!ok)
   } // randomTest()
   
+  @Test
+  public void testRemoveEmpty() {
+    setup();
+
+    // remove when list is empty
+    assertEquals(null, ints.remove(7));
+    // remove with invalid key
+    assertThrows(NullPointerException.class, () -> ints.remove(null));
+
+    // remove with key not in the list
+    set(9);
+    assertEquals(null, ints.remove(7));
+    remove(9);
+
+    // test list is empty
+    assertEquals(0, ints.size);
+  }
+
+  @Test
+  public void testGetExceptions() {
+    setup();
+    // Test get with null key
+    assertThrows(NullPointerException.class, () -> ints.get(null));
+    // Test get with key not in the list
+    assertThrows(IndexOutOfBoundsException.class, () -> ints.get(7));
+    set(5);
+    // Test get with key not in the list
+    assertThrows(IndexOutOfBoundsException.class, () -> ints.get(7));
+  }
+  
+  
   public static void main(String[] args) {
     SkipListTests slt = new SkipListTests();
     slt.setup();
     slt.simpleTest();
+    
+    SkipList<Integer, Integer> skipList = new SkipList<Integer, Integer>();
+    for (int size = 1; size < 200000; size = size + 100) {
+      skipList = new SkipList<Integer, Integer>();
+      for (int i = 0; i < size; i++) {
+        skipList.set(i, i);
+      } // for
+      skipList.set(size / 2, size / 2);
+      skipList.remove(size / 2);
+      System.out.println(skipList.removeCounter);
+    }
+    System.out.println("Done");
   } // main
 } // class SkipListTests
